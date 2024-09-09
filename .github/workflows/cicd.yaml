@@ -27,4 +27,4 @@ jobs:
       - name: Delete old container
         run: docker rm -f chatify-pro-container  
       - name: Run Docker Container
-        run: docker run -d -p 4000:4000 --name chatify-pro-container -e MONGO_PASSWORD='${{ secrets.MONGO_PASSWORD }}' shiv2025/chatify-pro
+        run: docker run -d -p 5000:5000 --name chatify-pro-container -e MONGO_DB_URI='${{ secrets.MONGO_DB_URI }}' shiv2025/chatify-pro
