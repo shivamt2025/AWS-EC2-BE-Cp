@@ -2,33 +2,37 @@ import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-
+import cors from "cors";  // Add this
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import userRoutes from "./routes/user.routes.js";
-
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import { app, server } from "./socket/socket.js";
 
 dotenv.config();
 
-
-// PORT should be assigned after calling dotenv.config() because we need to access the env variables. Didn't realize while recording the video. Sorry for the confusion.
+// PORT should be assigned after calling dotenv.config() because we need to access the env variables.
 const PORT = process.env.PORT || 5000;
+
+// Use CORS to allow frontend to communicate with backend
+app.use(cors({
+    origin: "*",  // Update with your frontend domain
+    credentials: true  // Allow cookies if needed
+	
+}));
 
 app.use(express.json()); // to parse the incoming requests with JSON payloads (from req.body)
 app.use(cookieParser());
+// Handle undefined routes
+app.get('*', (req, res) => {
+    res.status(404).json({ message: 'API route not found' });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
-app.get("/", (req, res) => {
-	res.send("Welcome to the backend API!");
-  });
-
-
 server.listen(PORT, () => {
-	connectToMongoDB();
-	console.log(`Server Running on port ${PORT}`);
+    connectToMongoDB();
+    console.log(`Server Running on port ${PORT}`);
 });
